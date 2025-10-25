@@ -21,6 +21,27 @@ const app = express();
 //     console.log("Contact");
 //     res.send("Contact");
 // });
+
+
+
+//middleware chain
+app.get("/info", (req, res,next) => {
+  console.log("Info 1");
+    res.send("Info1");
+    next();
+},(req, res) => {
+  console.log("Info 2");
+    res.send("Info 2");
+});
+
+
+
+
+
+
+
+
+
 app.get("/", (req, res) => {
     console.log("Home");
     res.send("Home");
@@ -43,5 +64,5 @@ app.get("/contact", (req, res) => {
     res.send("Contact");
 });
 app.listen(3000, () => {
-  console.log("Server is running on port 3500");
+  console.log("Server is running on port 3000");
 });
