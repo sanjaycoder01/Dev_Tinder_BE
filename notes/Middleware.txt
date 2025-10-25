@@ -1,0 +1,66 @@
+### 📘 Express Middleware — Short Explanation
+
+#### 🧩 What is Middleware?
+
+A **middleware** is a **function** that runs **between receiving the request and sending the response** in an Express server.
+
+It plays a crucial role in processing HTTP requests before they reach the final route handler.
+
+---
+
+#### ⚙️ Middleware Can:
+
+* **Inspect or modify** the request (`req`) or response (`res`)
+* **Decide** whether to pass control to the next middleware or route handler using `next()`
+* **End the request-response cycle** by sending a response (`res.send()`, `res.json()`, etc.)
+
+---
+
+#### 🧠 How the Flow Works:
+
+```
+Incoming Request → Middleware(s) → Route Handler → Response Sent
+```
+
+Each middleware acts like a **checkpoint** that can perform operations such as:
+
+* Logging
+* Authentication
+* Validation
+* Parsing request data
+* Error handling
+
+---
+
+#### ✅ Example:
+
+```js
+app.get("/info", (req, res, next) => {
+  console.log("Middleware 1");
+  next(); // pass control to next function
+}, (req, res) => {
+  console.log("Route Handler");
+  res.send("Response sent to client");
+});
+```
+
+🧩 Flow:
+
+1. Client sends a request to `/info`
+2. Middleware 1 runs → calls `next()`
+3. Route handler runs → sends response
+
+---
+
+#### 🧾 In Short:
+
+> Middleware = function that handles the request **before** sending the response.
+
+It is part of the process of:
+**accepting the request → processing it → finding the route → sending the response.**
+
+---
+
+#### 💡 Think of it Like:
+
+Middleware functions are **checkpoints** on the road from **Request → Response**, ensuring everything is valid and ready before the final response is sent.

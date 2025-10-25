@@ -25,17 +25,26 @@ const app = express();
 
 
 //middleware chain
+// app.get("/info", (req, res,next) => {
+//   console.log("Info 1");
+//     res.send("Info1");
+//     next();
+// },(req, res) => {
+//   console.log("Info 2");
+//     res.send("Info 2");
+// });
+
+
+//multiple routes
 app.get("/info", (req, res,next) => {
-  console.log("Info 1");
+    res.send("Info");
+    next();
+});
+//tHis is called route handler
+app.get("/info1", (req, res,next) => {
     res.send("Info1");
     next();
-},(req, res) => {
-  console.log("Info 2");
-    res.send("Info 2");
 });
-
-
-
 
 
 
