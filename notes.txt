@@ -1,0 +1,78 @@
+---
+description:
+globs:
+alwaysApply: true
+---
+The Problem You’re Seeing
+
+You said:
+
+if I use route '/' and after that any route will be there, it will point to '/'.
+
+✅ Correct — and here’s why that happens.
+
+⚙️ 1. app.use() Matches Prefix Routes
+
+app.use(path, callback) is middleware, not a strict route handler.
+
+That means:
+
+It matches every route that starts with the given path.
+
+It doesn’t care about the HTTP method (GET, POST, etc.).
+
+It runs in the order you define it.
+
+So when you write this first:
+
+app.use("/", (req, res) => {
+  console.log("Home");
+  res.send("Home");
+});
+
+
+It matches all requests —
+because every URL path in Express starts with /.
+
+That means:
+
+/ ✅ matches
+
+/home ✅ matches
+
+/about ✅ matches
+
+/contact ✅ matches
+
+So, the first middleware handles the request and ends the response with res.send("Home").
+
+Since the response is already sent, the request never reaches the next handlers.
+
+🧠 2. Express Routing Order
+
+Express executes middleware top-to-bottom.
+
+So in your code:
+
+app.use("/", ...);  // runs first
+app.use("/home", ...); // never reached
+app.use("/about", ...);
+app.use("/contact", ...);
+
+
+When /home is requested:
+
+Express sees / matches /home (because /home starts with /).
+
+It executes that first function.
+
+You send a response (res.send("Home")).
+
+Request ends — it doesn’t check further routes.
+
+That’s why all routes respond with "Home".
+
+
+
+
+/////   ORDER OF THE ROUTES MATTER HERE
