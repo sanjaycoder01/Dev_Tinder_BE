@@ -83,11 +83,17 @@ app.get("/admin/getAllData", (req, res) => {
 app.get("/user/getAllData",userauth, (req, res) => {
   res.send("All Data");
 });
+app.get("/test",(req,res,next)=>{
+  throw new Error("This is a test error");
+});
 
 
 
-
-
+app.use("/",(err,req,res,next)=>{
+  if(err){
+  res.status(500).send("Internal Server Error");
+  }
+});
 
 
 
