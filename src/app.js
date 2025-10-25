@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const {adminauth,userauth}=require("./middlewares/adminauth");
 // app.use("/", (req, res) => {
 //   console.log("Home");
 //   res.send("Home");
@@ -73,31 +74,15 @@ const app = express();
 //     res.send("Contact");
 // });
 
-app.use("/",(req, res, next) => {
-  const token="abc1234";
-  if(token==="abc123"){
-    console.log("Token is valid");
-    next();
-  }else{
-    console.log("Token is invalid");
-    res.status(401).send("Unauthorized");
-  }
+app.use("/admin",adminauth);
+
+app.get("/admin/getAllData", (req, res) => {
+  res.send("All Data");
 });
 
-app.get("/info", (req, res) => {
-  res.send("Info");
+app.get("/user/getAllData",userauth, (req, res) => {
+  res.send("All Data");
 });
-app.get("/info1", (req, res) => {
-  res.send("Info1");
-});
-app.get("/info2", (req, res) => {
-  res.send("Info2");
-});
-
-app.get("/info3", (req, res) => {
-  res.send("Info3");
-});
-
 
 
 
