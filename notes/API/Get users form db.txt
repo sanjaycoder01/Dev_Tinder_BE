@@ -1,0 +1,85 @@
+Difference between find() and findOne()
+Method	What it Returns	Return Type	When to Use
+find()	Returns all documents that match the query	Array of objects (can be empty or have many results)	When you expect multiple users or want to loop through results
+findOne()	Returns first document only that matches the query	Single object (or null if not found)	When you expect only one user or a unique record (like by email)
+⚙️ Example
+👉 User.find({ email: "john@example.com" })
+
+MongoDB internally does this:
+
+“Find all users where email is john@example.com”
+
+🔹 Result → Array
+
+[
+  { _id: 1, name: "JohnDoe", email: "john@example.com" },
+  { _id: 2, name: "JohnDoe", email: "john@example.com" }
+]
+
+
+Even if there’s only one match, it still returns inside an array:
+
+[{ _id: 1, name: "JohnDoe", email: "john@example.com" }]
+
+
+That’s what happened in your output 👇
+data is an array containing two users with same email.
+
+👉 User.findOne({ email: "john@example.com" })
+
+MongoDB internally does this:
+
+“Find the first user where email is john@example.com and stop searching.”
+
+🔹 Result → Single object (not array)
+
+{ _id: 1, name: "JohnDoe", email: "john@example.com" }
+
+
+If not found → returns null.
+
+⚠️ Important Detail
+
+If your email should be unique (like a login system),
+you should always use:
+
+const user = await User.findOne({ email });
+
+
+…and ideally, make email a unique field in your schema:
+
+email: { type: String, unique: true, required: true }
+
+
+This ensures no duplicate users with the same email are stored.
+
+🧩 Updated version of your route
+
+If you only expect one user per email, use this:
+
+app.get("/user/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found with this email",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User found successfully",
+      data: user,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+});

@@ -1,0 +1,71 @@
+Let’s break it down behind the scenes so you deeply understand what app.use(express.json()) really does.
+
+💡 What happens before you add app.use(express.json())
+
+When your client (frontend or Postman) sends a request like:
+
+{
+  "name": "Sanjay",
+  "email": "sjkulkarni31@gmail.com"
+}
+
+
+This JSON data is actually sent as raw text in the HTTP request body, like this 👇
+
+POST /api/users HTTP/1.1
+Content-Type: application/json
+
+{"name":"Sanjay","email":"sjkulkarni31@gmail.com"}
+
+
+So — by default, Express doesn’t know how to read or understand raw JSON text.
+That means req.body will be undefined.
+
+⚙️ What app.use(express.json()) does
+
+When you write:
+
+app.use(express.json());
+
+
+You’re registering middleware that:
+
+Listens to incoming requests with Content-Type: application/json.
+
+Reads the raw text data from the request body.
+
+Parses (converts) that JSON string into a JavaScript object using JSON.parse().
+
+Attaches that object to req.body, so you can access it easily inside your route handler.
+
+🔁 Behind the scenes flow:
+Client sends JSON string in body
+     ↓
+Express receives raw text data
+     ↓
+express.json() middleware runs
+     ↓
+JSON.parse() converts it → JavaScript object
+     ↓
+req.body = { name: "Sanjay", email: "sjkulkarni31@gmail.com" }
+     ↓
+Route handler can now read req.body normally
+
+✅ Example:
+app.use(express.json());
+
+app.post("/user", (req, res) => {
+  console.log(req.body); 
+  // Output: { name: 'Sanjay', email: 'sjkulkarni31@gmail.com' }
+  res.send("User data received");
+});
+
+
+Without express.json(), this console.log(req.body) would be undefined.
+
+🧠 Summary
+Step	What happens
+express.json()	Middleware parses incoming JSON
+JSON → Object	Conversion happens via JSON.parse()
+req.body	Becomes usable inside routes
+Without it	req.body stays undefined

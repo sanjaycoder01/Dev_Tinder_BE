@@ -73,6 +73,167 @@ app.post("/signup", async (req, res) => {
     });
   }
 });
+// GET all users endpoint
+app.get('/feed', async (req, res) => {
+  try {
+    // Fetch all users from database
+    const users = await User.find({});
+    
+    res.status(200).json({
+      success: true,
+      message: "Users retrieved successfully",
+      count: users.length,
+      data: users
+    });
+    
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+});
+
+// GET user by email endpoint
+app.get("/user/email/:email", async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email parameter is required",
+      });
+    }
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found with this email",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "User found successfully",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error finding user by email:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+});
+
+// GET user by ID endpoint
+app.get("/user/id/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    // Validate MongoDB ObjectId format
+    if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID format",
+      });
+    }
+
+    const user = await User.findById(id);
+    
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found with this ID",
+      });
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: "User found successfully",
+      data: user,
+    });
+  } catch (error) {
+    console.error("Error finding user by ID:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+});
+app.get("/user/delete/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+   const user = await User.findByIdAndDelete(id);
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found with this ID",
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: "User deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting user:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+});
+app.patch("/user/update/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, email, password, age, gender, location } = req.body;
+    
+    // Validate MongoDB ObjectId format
+    if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid user ID format",
+      });
+    }
+    
+    // Check if user exists
+    const existingUser = await User.findById(id);
+    if (!existingUser) {
+      return res.status(404).json({
+        success: false,
+        message: "User not found with this ID",
+      });
+    }
+    
+    // Update user and return updated document
+    const user = await User.findByIdAndUpdate(
+      id, 
+      { name, email, password, age, gender, location },
+      { new: true, runValidators: true }
+    );
+    
+    res.status(200).json({
+      success: true,
+      message: "User updated successfully",
+      data: user
+    });
+  } catch (error) {
+    console.error("Error updating user:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message,
+    });
+  }
+});
 // Start server only after database connection
 const startServer = async () => {
   try {
