@@ -16,7 +16,7 @@ It plays a crucial role in processing HTTP requests before they reach the final 
 
 ---
 
-#### 🧠 How the Flow Works:
+#### 🧠 How the Flow Works: 
 
 ```
 Incoming Request → Middleware(s) → Route Handler → Response Sent
