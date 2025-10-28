@@ -1,0 +1,12 @@
+Mandatary field
+required:true
+deafult:"bjkdjkf"
+type:[String]
+trim:true
+  validate(value) {
+      if (value !== "Male" && value !== "Female" && value !== "Other") {
+        throw new Error("Gender must be Male, Female or Other");
+      }
+    }
+timestamps:true
+so you can give timestamps true for any schmea as a second argument, mongodb automatically create createdAt and updatedAt fields for each document
