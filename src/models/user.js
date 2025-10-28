@@ -28,6 +28,17 @@ const userSchema = new mongoose.Schema({
   location: String,
   skills: {
     type: [String],
+    minlength: 1,
+    maxlength: 10,
+    required: true,
+    validate(value) {
+      if (value.length < 3) {
+        throw new Error("Skills must be at least 3 characters long");
+      }
+      if (value.length > 10) {
+        throw new Error("Skills must be less than 10 characters long");
+      }
+    }
   },
   about: {
     type: String,

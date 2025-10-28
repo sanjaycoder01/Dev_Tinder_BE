@@ -10,3 +10,12 @@ trim:true
     }
 timestamps:true
 so you can give timestamps true for any schmea as a second argument, mongodb automatically create createdAt and updatedAt fields for each document
+   const ALLOWED_UPDATES=["name","password","age","gender","location","skills","about"];
+    for(const update of Object.keys(req.body)){
+      if(!ALLOWED_UPDATES.includes(update)){
+        return res.status(400).json({
+          success: false,
+          message: `Invalid update: ${update} is not allowed`,
+        });
+      }
+    }

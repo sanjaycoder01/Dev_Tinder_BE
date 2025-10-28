@@ -194,8 +194,16 @@ app.get("/user/delete/:id", async (req, res) => {
 app.patch("/user/update/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, email, password, age, gender, location } = req.body;
-    
+    const { name, email, password, age, gender, location,skills,about } = req.body;
+    const ALLOWED_UPDATES=["name","password","age","gender","location","skills","about"];
+    for(const update of Object.keys(req.body)){
+      if(!ALLOWED_UPDATES.includes(update)){
+        return res.status(400).json({
+          success: false,
+          message: `Invalid update: ${update} is not allowed`,
+        });
+      }
+    }
     // Validate MongoDB ObjectId format
     if (!id || !/^[0-9a-fA-F]{24}$/.test(id)) {
       return res.status(400).json({
@@ -216,7 +224,7 @@ app.patch("/user/update/:id", async (req, res) => {
     // Update user and return updated document
     const user = await User.findByIdAndUpdate(
       id, 
-      { name, email, password, age, gender, location },
+      { name, email, password, age, gender, location,skills,about },
       { new: true, runValidators: true }
     );
     
