@@ -1,3 +1,7 @@
+We can do schema level validation and API level validation
+
+
+
 Mandatary field
 required:true
 deafult:"bjkdjkf"
@@ -17,5 +21,12 @@ so you can give timestamps true for any schmea as a second argument, mongodb aut
           success: false,
           message: `Invalid update: ${update} is not allowed`,
         });
+      }
+    }
+
+  Validate email :validator  install validator
+      validate(value) {
+      if(!validator.isEmail(value)){
+        throw new Error("Invalid email format");
       }
     }

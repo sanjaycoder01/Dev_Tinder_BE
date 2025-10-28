@@ -1,7 +1,7 @@
 const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
-
+const validator = require("validator");
 // Import middleware
 const { adminauth,userauth } = require("./middlewares/adminauth");
 const User = require("./models/user");
@@ -20,7 +20,12 @@ app.get("/admin/getAllData", (req, res) => {
 app.post("/signup", async (req, res) => {
   try {
     const { name, email, password, age, gender, location } = req.body;
-    
+    if(!validator.isEmail(email)){
+      return res.status(400).json({
+        success: false,
+        message: "Invalid email format"
+      });
+    }
     // Validation - check required fields
     if (!name || !email || !password) {
       return res.status(400).json({
