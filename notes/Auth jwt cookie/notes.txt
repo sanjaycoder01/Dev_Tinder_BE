@@ -37,3 +37,6 @@ to get cookie back from server, use this library as a middleware
     res.status(400).send(error.message);
   }
 };
+
+
+expire the cookie,jwt
