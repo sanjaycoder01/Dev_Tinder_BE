@@ -2,17 +2,19 @@ const express = require("express");
 const connectDB = require("./config/database");
 const app = express();
 const validator = require("validator");
+const bcrypt = require("bcrypt");
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
 // Import middleware
 const { adminauth,userauth } = require("./middlewares/adminauth");
 const User = require("./models/user");
-
+const { validateSignUpData } = require("./utils/validation");
 // Body parsing middleware
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
-// Use middleware
-app.use("/", userauth);
-
+// Cookie parser middleware (must be before userauth)
+app.use(cookieParser());
 // Define routes
 app.get("/admin/getAllData", (req, res) => {
   res.send("All Data");
@@ -20,19 +22,7 @@ app.get("/admin/getAllData", (req, res) => {
 app.post("/signup", async (req, res) => {
   try {
     const { name, email, password, age, gender, location } = req.body;
-    if(!validator.isEmail(email)){
-      return res.status(400).json({
-        success: false,
-        message: "Invalid email format"
-      });
-    }
-    // Validation - check required fields
-    if (!name || !email || !password) {
-      return res.status(400).json({
-        success: false,
-        message: "Name, email, and password are required"
-      });
-    }
+      validateSignUpData(req);
     
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -42,12 +32,13 @@ app.post("/signup", async (req, res) => {
         message: "User with this email already exists"
       });
     }
-    
+   const hashedPassword = await bcrypt.hash(password, 10);
+   console.log(hashedPassword);
     // Create new user
     const user = new User({
       name,
       email,
-      password,
+      password:hashedPassword,
       age: age || null,
       gender: gender || null,
       location: location || null
@@ -78,6 +69,56 @@ app.post("/signup", async (req, res) => {
     });
   }
 });
+
+app.post("/login", async (req, res) => {  
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid email or password"
+      });
+    }
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid password"
+      });
+    } 
+    const token = jwt.sign({ userId: user._id }, "sanjay@123");
+    console.log(token);
+    // Set cookie before sending JSON response
+    res.cookie("token", token, {
+      httpOnly: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Login successful",
+      data: user
+    });
+  } catch (error) {
+    console.error("Login error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal server error",
+      error: error.message
+    });
+  }
+});
+
+app.get("/profile",userauth, async (req, res) => {
+  try{
+const user=req.user;
+res.send(user);
+} catch (error) {
+  console.error("Error retrieving profile:", error);
+  res.status(400).send(error.message);
+}
+});
+
 // GET all users endpoint
 app.get('/feed', async (req, res) => {
   try {

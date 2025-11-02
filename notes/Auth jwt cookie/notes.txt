@@ -1,16 +1,19 @@
-const jwt = require("jsonwebtoken");
-const User = require("../models/user");
-const adminauth = (req, res, next) => {
-  const token = "abc1234";
-  if (token === "abc1234") {
-    console.log("Token is valid");
-    next();
-  } else {
-    console.log("Token is invalid");
-    res.status(401).send("Unauthorized");
-  }
-};
-const userauth = async (req, res, next) => {
+cookie-parser
+middleware
+
+to get cookie back from server, use this library as a middleware
+  const token = jwt.sign({ userId: user._id }, "sanjay@123");
+   res.cookie("token", token, {
+      httpOnly: true,
+    });
+
+    const token = req.cookies.token;
+     const decoded = await jwt.verify(token, "sanjay@123");
+
+
+  create a authmiddleware, where token validation will happen 
+  use that middleware for every endpoint
+  const userauth = async (req, res, next) => {
   try {
     const token = req.cookies.token;
     if (!token) {
@@ -34,4 +37,3 @@ const userauth = async (req, res, next) => {
     res.status(400).send(error.message);
   }
 };
-module.exports = { adminauth, userauth };
