@@ -38,6 +38,13 @@ const validateSignUpData=(req)=>{
         throw new Error("Location must be at least 3 characters long");
     }
 }
+
+const validateProfileUpdateData=(req)=>{
+const allowedEditFields=["name","email","password","age","gender","location"];
+const isEditAllowed=Object.keys(req.body).every(field=>allowedEditFields.includes(field));
+return isEditAllowed;
+}
 module.exports={
-    validateSignUpData
+    validateSignUpData,
+    validateProfileUpdateData
 }

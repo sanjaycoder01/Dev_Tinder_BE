@@ -60,6 +60,14 @@ const userSchema = new mongoose.Schema({
   about: {
     type: String,
     default: "hi this is deafult value"
+  },
+  resetToken: {
+    type: String,
+    default: null
+  },
+  resetTokenExpiry: {
+    type: Date,
+    default: null
   }
 }, { timestamps: true });
 
