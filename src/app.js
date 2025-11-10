@@ -8,6 +8,7 @@ const jwt = require("jsonwebtoken");
 const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
+const userRouter = require("./routes/user");
 // // Import middleware
 // const { adminauth, userauth } = require("./middlewares/adminauth");
 // const User = require("./models/user");
@@ -25,6 +26,7 @@ app.use(cookieParser());
 app.use("/", authRouter);
 app.use("/", profileRouter);
 app.use("/", requestRouter);
+app.use("/", userRouter);
 // Start server only after database connection
 const startServer = async () => {
   try {
