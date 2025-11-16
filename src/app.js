@@ -9,11 +9,16 @@ const authRouter = require("./routes/auth");
 const profileRouter = require("./routes/profile");
 const requestRouter = require("./routes/request");
 const userRouter = require("./routes/user");
+const cors = require("cors");
 // // Import middleware
 // const { adminauth, userauth } = require("./middlewares/adminauth");
 // const User = require("./models/user");
 // const { validateSignUpData } = require("./utils/validation");
 // Body parsing middleware
+app.use(cors(
+  {origin: "http://localhost:3000",
+  credentials: true,}
+));
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
